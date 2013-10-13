@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+# This script serves as the GEOS build step of the
+# [**GeoDjango Buildpack**](https://github.com/dulaccc/heroku-buildpack-geodjango)
+# compiler.
+#
+# A [buildpack](http://devcenter.heroku.com/articles/buildpacks) is an
+# adapter between a Python application and Heroku's runtime.
+#
+# This script is invoked by [`bin/compile`](/).
+
+# The location of the pre-compiled libmemcached binary.
+VENDORED_GEOS="https://s3.amazonaws.com/cirheroku/geos-3.3.2-herkou.tar.gz"
+
+# Syntax sugar.
+source $BIN_DIR/utils
+
+puts-step "Checking for GEOS"
+
+if [ ! -d $CACHE_DIR/geos ]; then
+  # Download and extract geos into target vendor directory.
+  echo "Fetching and installing GEOS 3.3.2" | indent
+  curl -s -L -o tmp-geos.tar.gz $VENDORED_GEOS
+  echo "Caching ..." | indent
+  tar -zxvf tmp-geos.tar.gz >/dev/null
+  rm tmp-geos.tar.gz
+  mkdir $CACHE_DIR/geos
+  mv geos $CACHE_DIR/geos
+fi
+
+mkdir -p $BUILD_DIR/vendor
+cp -R $CACHE_DIR/geos $BUILD_DIR/vendor
+echo "Installed" | indent
+
+# make the lib path accessible
+export GEOS_LIBRARY_PATH=$BUILD_DIR/vendor/geos/lib/libgeos_c.so
+echo "GEOS installed and accessible with env variable 'GEOS_LIBRARY_PATH'" | indent

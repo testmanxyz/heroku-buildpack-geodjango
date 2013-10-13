@@ -93,47 +93,6 @@ bpwatch start pre_compile
   source $BIN_DIR/steps/hooks/pre_compile
 bpwatch stop pre_compile
 
-# Install GEOS
-if [ ! -d $CACHE_DIR/gdal ]; then
-  cd $BUILD_DIR
-  puts-step "Fetching and installing GEOS 3.3.2"
-  curl -O https://s3.amazonaws.com/cirheroku/geos-3.3.2-herkou.tar.gz >/dev/null 2>&1
-  puts-step "Installing ..."
-  tar xzvf geos-3.3.2-herkou.tar.gz >/dev/null 2>&1
-  mv geos $CACHE_DIR/geos
-  rm geos-3.3.2-herkou.tar.gz
-  echo "GEOS installed" | indent
-fi
-
-# Install Proj.4
-if [ ! -d $CACHE_DIR/gdal ]; then
-  cd $BUILD_DIR
-  puts-step "Fetching and installing Proj.4 4.7.0"
-  curl -O https://s3.amazonaws.com/cirheroku/proj4-4.7.0-heroku.tar.gz >/dev/null 2>&1
-  puts-step "Installing ..."
-  tar xzvf proj4-4.7.0-heroku.tar.gz >/dev/null 2>&1
-  mv proj4 $CACHE_DIR/proj4
-  rm proj4-4.7.0-heroku.tar.gz
-  echo "Proj.4 installed" | indent
-fi
-
-# Install GDAL
-if [ ! -d $CACHE_DIR/gdal ]; then
-  cd $BUILD_DIR
-  puts-step "Fetching and installing GDAL 1.8.1"
-  curl -O https://s3.amazonaws.com/cirheroku/gdal-1.8.1-heroku.tar.gz >/dev/null 2>&1
-  puts-step "Installing ..."
-  tar xzvf gdal-1.8.1-heroku.tar.gz >/dev/null 2>&1
-  mv gdal $CACHE_DIR/gdal
-  rm gdal-1.8.1-heroku.tar.gz
-  echo "GDAL installed" | indent
-fi
-
-# Reject a non-packaged Django app.
-if [ "$NAME" = "Python" ]; then
-  [ -f manage.py ] && [ -f settings.py ] && { echo " !     Django app must be in a package subdirectory"; exit 1; }
-fi
-
 # If no requirements given, assume `setup.py develop`.
 if [ ! -f requirements.txt ]; then
   puts-step "No requirements.txt provided; assuming dist package."
@@ -165,14 +124,6 @@ bpwatch stop restore_cache
 set +e
 # Create set-aside `.heroku` folder.
 mkdir .heroku &> /dev/null
-set -e
-
-set +e
-# Create set-aside .geodjango folder and copy compiled files
-mkdir -p .geodjango
-cp -R $CACHE_DIR/geos .geodjango
-cp -R $CACHE_DIR/proj4 .geodjango
-cp -R $CACHE_DIR/gdal .geodjango
 set -e
 
 mkdir -p $(dirname $PROFILE_PATH)
@@ -246,6 +197,16 @@ hash -r
 bpwatch start pylibmc_install
   source $BIN_DIR/steps/pylibmc
 bpwatch stop pylibmc_install
+
+# GeoDjango support. (GEOS, Proj.4, GDAL)
+# See [`bin/steps/geos`](geos.html).
+# See [`bin/steps/proj4`](proj4.html).
+# See [`bin/steps/gdal`](gdal.html).
+bpwatch start geodjango_install
+  source $BIN_DIR/steps/geos
+  source $BIN_DIR/steps/proj4
+  source $BIN_DIR/steps/gdal
+bpwatch stop geodjango_install
 
 # Install Mercurial if it appears to be required.
 if (grep -Fiq "hg+" requirements.txt) then
