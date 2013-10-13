@@ -24,14 +24,13 @@ if [ ! -d $CACHE_DIR/geos ]; then
   echo "Caching ..." | indent
   tar -zxvf tmp-geos.tar.gz >/dev/null
   rm tmp-geos.tar.gz
-  mkdir $CACHE_DIR/geos
-  mv geos $CACHE_DIR/geos
+  mv geos $CACHE_DIR
 fi
 
-mkdir -p $BUILD_DIR/vendor
-cp -R $CACHE_DIR/geos $BUILD_DIR/vendor
+mkdir -p $BUILD_DIR/.geodjango
+cp -R $CACHE_DIR/geos $BUILD_DIR/.geodjango
 echo "Installed" | indent
 
 # make the lib path accessible
-export GEOS_LIBRARY_PATH=$BUILD_DIR/vendor/geos/lib/libgeos_c.so
+export GEOS_LIBRARY_PATH=$BUILD_DIR/.geodjango/geos/lib/libgeos_c.so
 echo "GEOS installed and accessible with env variable 'GEOS_LIBRARY_PATH'" | indent
