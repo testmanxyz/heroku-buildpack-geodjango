@@ -1,48 +1,61 @@
-Heroku buildpack: GeoDjango
-========================
+#Heroku buildpack: GeoDjango
 
 This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpacks) for GeoDjango apps.
 It extends the original Python buildpack by adding GEOS, Proj.4 and GDAL, per the [GeoDjango installation
 instructions](https://docs.djangoproject.com/en/dev/ref/contrib/gis/install/).
 
-This buildpack assumes your PostGIS server lives outside the Heroku stack, though we'd love to see it
-forked to handle any setup for Heroku's Postgres services.
-=======
-This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpacks) for Python apps, powered by [pip](http://www.pip-installer.org/).
+--- 
 
-[![Build Status](https://secure.travis-ci.org/heroku/heroku-buildpack-python.png?branch=master)](http://travis-ci.org/heroku/heroku-buildpack-python)
+This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpacks) for Python apps.
 
-Usage
------
+[![Build Status](https://secure.travis-ci.org/dulaccc/heroku-buildpack-geodjango.png?branch=master)](http://travis-ci.org/dulaccc/heroku-buildpack-geodjango)
 
-Example usage:
+---
 
-    $ heroku create --stack cedar --buildpack http://github.com/cirlabs/heroku-buildpack-geodjango/
+##Configuration
 
-    $ git push heroku master
-    ...
-    -----> Heroku receiving push
-    -----> Fetching custom buildpack... done
-    -----> Python app detected
-    -----> Fetching and installing GEOS 3.3.2
-    -----> Installing ...
+You need to set two Django settings in order for `GEOS` and `GDAL` to work properly.
+
+**settings.py**
+
+```python
+from os import environ
+
+GEOS_LIBRARY_PATH = environ.get('GEOS_LIBRARY_PATH')
+GDAL_LIBRARY_PATH = environ.get('GDAL_LIBRARY_PATH')
+```
+
+##Usage
+
+```sh
+$ heroku create --stack cedar --buildpack http://github.com/dulaccc/heroku-buildpack-geodjango/
+
+$ git push heroku master
+...
+-----> Heroku receiving push
+-----> Fetching custom buildpack... done
+-----> Python app detected
+-----> Checking for GDAL
+       Fetching and installing GEOS 3.3.2
+       Caching ...
        GEOS installed
-    -----> Fetching and installing Proj.4 4.7.0
-    -----> Installing ...
+-----> Checking for Proj.4
+       Fetching and installing Proj.4 4.7.0
+       Installing ...
        Proj.4 installed
-    -----> Fetching and installing GDAL 1.8.1
-    -----> Installing ...
+-----> Checking for GDAL
+       Fetching and installing GDAL 1.8.1
+       Installing ...
        GDAL installed
-    -----> Preparing virtualenv version 1.7
-    ... etc.
+-----> Preparing virtualenv
+... etc.
+```
 
-Notes
------
+## Notes
 
-All libraries are stored in /app/.github.
+All libraries are stored in the directory `/app/.geodjango`.
 
-IMPORTANT: You will need to set two Django settings in order for GEOS and GDAL to work properly!
+## Contact
 
-GEOS_LIBRARY_PATH = '/app/.geodjango/geos/lib/libgeos_c.so'
-
-GDAL_LIBRARY_PATH = '/app/.geodjango/gdal/lib/libgdal.so'
+[Pierre Dulac](http://github.com/dulaccc)  
+[@dulaccc](https://twitter.com/dulaccc)
