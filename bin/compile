@@ -2,8 +2,7 @@
 
 # Usage:
 #
-#     $ bin/compile <build-dir> <cache-dir>
-
+#     $ bin/compile <build-dir> <cache-dir> <env-path>
 
 # Fail fast and fail hard.
 set -eo pipefail
@@ -16,6 +15,8 @@ BIN_DIR=$(cd $(dirname $0); pwd) # absolute path
 ROOT_DIR=$(dirname $BIN_DIR)
 BUILD_DIR=$1
 CACHE_DIR=$2
+ENV_DIR=$3
+
 
 CACHED_DIRS=".heroku"
 
@@ -24,11 +25,10 @@ VIRTUALENV_LOC=".heroku/venv"
 LEGACY_TRIGGER="lib/python2.7"
 PROFILE_PATH="$BUILD_DIR/.profile.d/python.sh"
 
-# Python version. This will be used in the future to specify custom Pythons.
-DEFAULT_PYTHON_VERSION="python-2.7.4"
+DEFAULT_PYTHON_VERSION="python-2.7.6"
 PYTHON_EXE="/app/.heroku/python/bin/python"
-PIP_VERSION="1.3.1"
-DISTRIBUTE_VERSION="0.6.36"
+PIP_VERSION="1.5.4"
+SETUPTOOLS_VERSION="2.1"
 
 # Setup bpwatch
 export PATH=$PATH:$ROOT_DIR/vendor/bpwatch
@@ -79,11 +79,14 @@ ORIG_BUILD_DIR=$BUILD_DIR
 BUILD_DIR=$APP_DIR
 
 # Prepend proper path buildpack use.
-export PATH=$BUILD_DIR/.heroku/python/bin:$PATH
+export PATH=$BUILD_DIR/.heroku/python/bin:$BUILD_DIR/.heroku/vendor/bin:$PATH
 export PYTHONUNBUFFERED=1
 export LANG=en_US.UTF-8
-export LIBRARY_PATH=/app/.heroku/vendor/lib
-export LD_LIBRARY_PATH=/app/.heroku/vendor/lib
+export C_INCLUDE_PATH=/app/.heroku/vendor/include:$BUILD_DIR/.heroku/vendor/include
+export CPLUS_INCLUDE_PATH=/app/.heroku/vendor/include:$BUILD_DIR/.heroku/vendor/include
+export LIBRARY_PATH=/app/.heroku/vendor/lib:$BUILD_DIR/.heroku/vendor/lib
+export LD_LIBRARY_PATH=/app/.heroku/vendor/lib:$BUILD_DIR/.heroku/vendor/lib
+export PKG_CONFIG_PATH=/app/.heroku/vendor/lib/pkg-config:$BUILD_DIR/.heroku/vendor/lib/pkg-config
 
 # Switch to the repo's context.
 cd $BUILD_DIR
@@ -97,6 +100,11 @@ bpwatch stop pre_compile
 if [ ! -f requirements.txt ]; then
   puts-step "No requirements.txt provided; assuming dist package."
   echo "-e ." > requirements.txt
+fi
+
+# Sticky runtimes.
+if [ -f $CACHE_DIR/.heroku/python-version ]; then
+  DEFAULT_PYTHON_VERSION=$(cat $CACHE_DIR/.heroku/python-version)
 fi
 
 # If no runtime given, assume default version.
@@ -171,13 +179,13 @@ if [ "$FRESH_PYTHON" ] || [[ ! $(pip --version) == *$PIP_VERSION* ]]; then
 
   bpwatch start prepare_environment
 
-  bpwatch start install_distribute
+  bpwatch start install_setuptools
     # Prepare it for the real world
-    puts-step "Installing Distribute ($DISTRIBUTE_VERSION)"
-    cd $ROOT_DIR/vendor/distribute-$DISTRIBUTE_VERSION/
+    puts-step "Installing Setuptools ($SETUPTOOLS_VERSION)"
+    cd $ROOT_DIR/vendor/setuptools-$SETUPTOOLS_VERSION/
     python setup.py install &> /dev/null
     cd $WORKING_DIR
-  bpwatch stop install_distribute
+  bpwatch stop install_setuptoools
 
   bpwatch start install_pip
     puts-step "Installing Pip ($PIP_VERSION)"
@@ -211,7 +219,7 @@ bpwatch stop geodjango_install
 # Install Mercurial if it appears to be required.
 if (grep -Fiq "hg+" requirements.txt) then
   bpwatch start mercurial_install
-    /app/.heroku/python/bin/pip install --use-mirrors mercurial | cleanup | indent
+    /app/.heroku/python/bin/pip install  mercurial | cleanup | indent
   bpwatch stop mercurial_install
 fi
 
@@ -222,14 +230,14 @@ puts-step "Installing dependencies using Pip ($PIP_VERSION)"
 [ ! "$FRESH_PYTHON" ] && bpwatch start pip_install
 [ "$FRESH_PYTHON" ] && bpwatch start pip_install_first
 
-/app/.heroku/python/bin/pip install --use-mirrors -r requirements.txt --exists-action=w --src=./.heroku/src | cleanup | indent
+/app/.heroku/python/bin/pip install -r requirements.txt --exists-action=w --src=./.heroku/src --allow-all-external  | cleanup | indent
 
 [ ! "$FRESH_PYTHON" ] && bpwatch stop pip_install
 [ "$FRESH_PYTHON" ] && bpwatch stop pip_install_first
 
 # Django collectstatic support.
 bpwatch start collectstatic
-  source $BIN_DIR/steps/collectstatic
+  sub-env $BIN_DIR/steps/collectstatic
 bpwatch stop collectstatic
 
 # ### Finalize
@@ -271,6 +279,6 @@ bpwatch start anvil_appdir_commit
   if [ "$SLUG_ID" ]; then
     deep-mv $TMP_APP_DIR $APP_DIR
   fi
-bpwatch stop anvil_appdir_commit
 
+bpwatch stop anvil_appdir_commit
 bpwatch stop compile
