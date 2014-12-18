@@ -8,10 +8,6 @@ instructions](https://docs.djangoproject.com/en/dev/ref/contrib/gis/install/).
 
 This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpacks) for Python apps.
 
-[![Build Status](https://secure.travis-ci.org/dulaccc/heroku-buildpack-geodjango.png?branch=master)](http://travis-ci.org/dulaccc/heroku-buildpack-geodjango)
-
----
-
 ##Configuration
 
 You need to set two Django settings in order for `GEOS` and `GDAL` to work properly.
