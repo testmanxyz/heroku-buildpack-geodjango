@@ -8,9 +8,9 @@ instructions](https://docs.djangoproject.com/en/dev/ref/contrib/gis/install/).
 
 This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpacks) for Python apps.
 
-##Configuration
+##Usage
 
-You need to set two Django settings in order for `GEOS` and `GDAL` to work properly.
+Example usage:
 
     $ heroku create --buildpack git://github.com/dulaccc/heroku-buildpack-geodjango.git
 
@@ -38,6 +38,18 @@ You need to set two Django settings in order for `GEOS` and `GDAL` to work prope
     -----> Discovering process types
            Procfile declares types -> (none)
 
+You can also add it to upcoming builds of an existing application:
+
+    $ heroku config:add BUILDPACK_URL=git://github.com/dulaccc/heroku-buildpack-geodjango.git
+
+The buildpack will detect your app as Python if it has the file requirements.txt in the root.
+
+It will use Pip to install your dependencies, vendoring a copy of the Python runtime into your slug.
+
+##Configuration
+
+Then you need to set two Django settings in order for `GEOS` and `GDAL` to work properly.
+
 **settings.py**
 
 ```python
@@ -45,46 +57,6 @@ from os import environ
 
 GEOS_LIBRARY_PATH = environ.get('GEOS_LIBRARY_PATH')
 GDAL_LIBRARY_PATH = environ.get('GDAL_LIBRARY_PATH')
-```
-
-##Usage
-
-The buildpack will detect your app as Python if it has the file `requirements.txt` in the root.
-
-It will use Pip to install your dependencies, vendoring a copy of the Python runtime into your slug.
-
-```sh
-$ heroku create --stack cedar --buildpack http://github.com/dulaccc/heroku-buildpack-geodjango/
-
-$ git push heroku master
-...
------> Fetching custom git buildpack... done
------> Python app detected
------> No runtime.txt provided; assuming python-2.7.6.
------> Preparing Python runtime (python-2.7.6)
------> Installing Setuptools (2.1)
------> Installing Pip (1.5.2)
------> Checking for GDAL
-       Fetching and installing GEOS 3.3.2
-       Caching ...
-       GEOS installed
------> Checking for Proj.4
-       Fetching and installing Proj.4 4.7.0
-       Installing ...
-       Proj.4 installed
------> Checking for GDAL
-       Fetching and installing GDAL 1.8.1
-       Installing ...
-       GDAL installed
------> Installing dependencies using Pip (1.5.2)
-       Downloading/unpacking Flask==0.7.2 (from -r requirements.txt (line 1))
-       Downloading/unpacking Werkzeug>=0.6.1 (from Flask==0.7.2->-r requirements.txt (line 1))
-       Downloading/unpacking Jinja2>=2.4 (from Flask==0.7.2->-r requirements.txt (line 1))
-       Installing collected packages: Flask, Werkzeug, Jinja2
-       Successfully installed Flask Werkzeug Jinja2
-       Cleaning up...
-
-... etc.
 ```
 
 ## Notes
