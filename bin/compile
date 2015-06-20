@@ -163,13 +163,10 @@ source $BIN_DIR/steps/mercurial
 source $BIN_DIR/steps/pylibmc
 
 # GeoDjango support. (GEOS, Proj.4, GDAL)
-# See [`bin/steps/geos`](geos.html).
-# See [`bin/steps/proj4`](proj4.html).
-# See [`bin/steps/gdal`](gdal.html).
 bpwatch start geodjango_install
-  source $BIN_DIR/steps/geos
-  source $BIN_DIR/steps/proj4
-  source $BIN_DIR/steps/gdal
+  source $BIN_DIR/steps/geodjango_geos
+  source $BIN_DIR/steps/geodjango_proj4
+  source $BIN_DIR/steps/geodjango_gdal
 bpwatch stop geodjango_install
 
 # Libffi support.
