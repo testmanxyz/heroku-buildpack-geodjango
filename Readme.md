@@ -17,7 +17,7 @@ Example usage:
     $ git push heroku master
     ...
     -----> Python app detected
-    -----> Installing runtime (python-2.7.8)
+    -----> Installing runtime (python-2.7.9)
     -----> Checking for GDAL
            Fetching and installing GEOS 3.3.2
            Caching ...
@@ -40,7 +40,7 @@ Example usage:
 
 You can also add it to upcoming builds of an existing application:
 
-    $ heroku config:add BUILDPACK_URL=git://github.com/dulaccc/heroku-buildpack-geodjango.git
+    $ heroku buildpacks:set git://github.com/dulaccc/heroku-buildpack-geodjango.git
 
 The buildpack will detect your app as Python if it has the file requirements.txt in the root.
 
@@ -68,14 +68,14 @@ All libraries are stored in the directory `/app/.geodjango`.
 You can also provide arbitrary releases Python with a `runtime.txt` file.
 
     $ cat runtime.txt
-    python-3.4.2
+    python-3.4.3
 
 Runtime options include:
 
-- python-2.7.8
-- python-3.4.2
+- python-2.7.9
+- python-3.4.3
 - pypy-2.4.0 (unsupported, experimental)
-- pypy3-2.3.1 (unsupported, experimental)
+- pypy3-2.4.0 (unsupported, experimental)
 
 Other [unsupported runtimes](https://github.com/kennethreitz/python-versions/tree/master/formula) are available as well.
 
