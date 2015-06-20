@@ -9,22 +9,20 @@
 #
 # This script is invoked by [`bin/compile`](/).
 
-# The location of the pre-compiled libmemcached binary.
-VENDORED_GDAL="https://s3.amazonaws.com/cirheroku/gdal-1.8.1-heroku.tar.gz"
-
 # Syntax sugar.
 source $BIN_DIR/utils
+source $BIN_DIR/helpers
 
-puts-step "Checking for GDAL"
+# Retrieve version
+GDAL_VERSION=$(manifest_version "gdal")
+
+# Display some information
+echo "Using gdal version: ${GDAL_VERSION}" | indent
 
 if [ ! -d $CACHE_DIR/gdal ]; then
   # Download and extract gdal into target vendor directory.
-  echo "Fetching and installing GDAL 1.8.1" | indent
-  curl -s -L -o tmp-gdal.tar.gz $VENDORED_GDAL
-  echo "Caching ..." | indent
-  tar -zxvf tmp-gdal.tar.gz >/dev/null
-  rm tmp-gdal.tar.gz
-  mv gdal $CACHE_DIR
+  echo "Fetching, caching and installing gdal" | indent
+  download_package "gdal" "${GDAL_VERSION}" "${CACHE_DIR}/gdal"
 fi
 
 mkdir -p $BUILD_DIR/.geodjango

@@ -9,22 +9,20 @@
 #
 # This script is invoked by [`bin/compile`](/).
 
-# The location of the pre-compiled libmemcached binary.
-VENDORED_GEOS="https://s3.amazonaws.com/cirheroku/geos-3.3.2-herkou.tar.gz"
-
 # Syntax sugar.
 source $BIN_DIR/utils
+source $BIN_DIR/helpers
 
-puts-step "Checking for GEOS"
+# Retrieve version
+GEOS_VERSION=$(manifest_version "geos")
+
+# Display some information
+echo "Using geos version: ${GEOS_VERSION}" | indent
 
 if [ ! -d $CACHE_DIR/geos ]; then
   # Download and extract geos into target vendor directory.
-  echo "Fetching and installing GEOS 3.3.2" | indent
-  curl -s -L -o tmp-geos.tar.gz $VENDORED_GEOS
-  echo "Caching ..." | indent
-  tar -zxvf tmp-geos.tar.gz >/dev/null
-  rm tmp-geos.tar.gz
-  mv geos $CACHE_DIR
+  echo "Fetching, caching and installing geos" | indent
+  download_package "geos" "${GEOS_VERSION}" "${CACHE_DIR}/geos"
 fi
 
 mkdir -p $BUILD_DIR/.geodjango
