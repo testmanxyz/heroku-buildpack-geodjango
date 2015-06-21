@@ -30,5 +30,6 @@ cp -R $CACHE_DIR/proj4 $BUILD_DIR/.geodjango
 echo "Installed" | indent
 
 # make the lib path accessible
-export PROJ4_LIBRARY_PATH=$BUILD_DIR/.geodjango/proj4
+export PROJ4_LIBRARY_DIR=$BUILD_DIR/.geodjango/proj4/lib
+export PROJ4_LIBRARY_PATH=$PROJ4_LIBRARY_DIR/libproj.so
 echo "Proj.4 installed and accessible with env variable 'PROJ4_LIBRARY_PATH'" | indent

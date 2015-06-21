@@ -30,5 +30,6 @@ cp -R $CACHE_DIR/geos $BUILD_DIR/.geodjango
 echo "Installed" | indent
 
 # make the lib path accessible
-export GEOS_LIBRARY_PATH=$BUILD_DIR/.geodjango/geos/lib/libgeos_c.so
+export GEOS_LIBRARY_DIR=$BUILD_DIR/.geodjango/geos/lib
+export GEOS_LIBRARY_PATH=$GEOS_LIBRARY_DIR/libgeos_c.so
 echo "GEOS installed and accessible with env variable 'GEOS_LIBRARY_PATH'" | indent
