@@ -199,8 +199,9 @@ set-env PYTHONHOME /app/.heroku/python
 set-env GEOS_LIBRARY_PATH $GEOS_LIBRARY_PATH
 set-env PROJ4_LIBRARY_PATH $PROJ4_LIBRARY_PATH
 set-env GDAL_LIBRARY_PATH $GDAL_LIBRARY_PATH
+set-env GDAL_DATA_PATH $GDAL_DATA_PATH
 set-env LIBRARY_PATH /app/.heroku/vendor/lib:/app/.heroku/python/lib
-set-env LD_LIBRARY_PATH "/app/.heroku/vendor/lib:/app/.heroku/python/lib:$GEOS_LIBRARY_DIR:$PROJ4_LIBRARY_DIR:$GDAL_LIBRARY_DIR"':$LD_LIBRARY_PATH'
+set-env LD_LIBRARY_PATH "/app/.heroku/vendor/lib:/app/.heroku/python/lib:$GEOS_LIBRARY_DIR/lib:$PROJ4_LIBRARY_DIR/lib:$GDAL_LIBRARY_DIR/lib"':$LD_LIBRARY_PATH'
 set-default-env LANG en_US.UTF-8
 set-default-env PYTHONHASHSEED random
 set-default-env PYTHONPATH /app/

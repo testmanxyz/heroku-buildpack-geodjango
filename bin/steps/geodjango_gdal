@@ -30,6 +30,7 @@ cp -R $CACHE_DIR/gdal $BUILD_DIR/.geodjango
 echo "Installed" | indent
 
 # make the lib path accessible
-export GDAL_LIBRARY_DIR=$BUILD_DIR/.geodjango/gdal/lib
-export GDAL_LIBRARY_PATH=$GDAL_LIBRARY_DIR/libgdal.so
+export GDAL_LIBRARY_DIR=$BUILD_DIR/.geodjango/gdal
+export GDAL_LIBRARY_PATH=$GDAL_LIBRARY_DIR/lib/libgdal.so
+export GDAL_DATA_PATH=$GDAL_LIBRARY_DIR/share/gdal
 echo "GDAL installed and accessible with env variable 'GDAL_LIBRARY_PATH'" | indent
