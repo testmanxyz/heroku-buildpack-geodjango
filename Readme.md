@@ -12,7 +12,7 @@ This is a [Heroku buildpack](http://devcenter.heroku.com/articles/buildpacks) fo
 
 Example usage:
 
-    $ heroku create --buildpack git://github.com/dulaccc/heroku-buildpack-geodjango.git#1.0
+    $ heroku create --buildpack git://github.com/dulaccc/heroku-buildpack-geodjango.git#1.1
     $ git push heroku master
     ...
     -----> Python app detected
@@ -39,7 +39,7 @@ Example usage:
 
 You can also add it to upcoming builds of an existing application:
 
-    $ heroku buildpacks:set git://github.com/dulaccc/heroku-buildpack-geodjango.git#1.0
+    $ heroku buildpacks:set git://github.com/dulaccc/heroku-buildpack-geodjango.git#1.1
 
 The buildpack will detect your app as Python if it has the file requirements.txt in the root.
 
