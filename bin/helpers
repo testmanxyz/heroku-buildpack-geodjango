@@ -22,7 +22,7 @@ function download_package2() {
   location="$3"
 
   mkdir -p $location
-  package="http://download.osgeo.org/gdal/2.0.0/gdal-2.0.0.tar.gz"
+  package="http://download.osgeo.org/gdal/1.11.2/gdal-1.11.2.tar.gz"
   echo $package
   curl $package -s -o - | tar xzf - -C $location
 }
