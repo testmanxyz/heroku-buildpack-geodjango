@@ -15,3 +15,14 @@ function download_package() {
   echo $package
   curl $package -s -o - | tar xzf - -C $location
 }
+
+function download_package2() {
+  name="$1"
+  version="$2"
+  location="$3"
+
+  mkdir -p $location
+  package="http://download.osgeo.org/gdal/2.0.0/gdal-2.0.0.tar.gz"
+  echo $package
+  curl $package -s -o - | tar xzf - -C $location
+}
