@@ -11,8 +11,8 @@ hash -r
 echo "Building gdal..."
 
 
-#SOURCE_TARBALL='http://download.osgeo.org/gdal/1.11.0/gdal-1.11.0.tar.gz'
-SOURCE_TARBALL='http://download.osgeo.org/gdal/2.0.0/gdal-2.0.0.tar.gz'
+SOURCE_TARBALL='http://download.osgeo.org/gdal/1.11.0/gdal-1.11.0.tar.gz'
+#SOURCE_TARBALL='http://download.osgeo.org/gdal/2.0.0/gdal-2.0.0.tar.gz'
 
 curl -L $SOURCE_TARBALL | tar zx
 
